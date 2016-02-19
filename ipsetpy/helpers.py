@@ -15,7 +15,7 @@ def ipset_get_set_names():
     return ipset_list(name=True).split()
 
 
-def ipset_list_ext():
+def ipset_list_ext(set_name=None, counter=False):
 
     mode_new_entry = 0
     mode_headers = 1
@@ -25,8 +25,8 @@ def ipset_list_ext():
 
     mode = mode_new_entry
 
-    for line in ipset_list(generator=True):
-        print(line)
+    for line in ipset_list(generator=True, set_name=set_name):
+        # print(line)
 
         if mode == mode_new_entry:
             if line.startswith('Name: '):
@@ -67,7 +67,14 @@ def ipset_list_ext():
             if line == '':
                 mode = mode_new_entry
             else:
-                current_entry["members"].append(line)
+                member = re.split( ' ', line );
+                if ( len(member) == 1 ):
+                    current_entry["members"].append(line)
+                else:
+                    if( counter ):
+                        current_entry["members"].append( { 'entry': member[0],  member[1]:  member[2], member[3]: member[4] } )
+                    else:
+                        current_entry["members"].append( member[0] )
 
     return result
 
